@@ -20,7 +20,10 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
     }
     else {
-      setPersons(persons.concat({ name: newName, number: newNumber }))
+      const newPerson = persons.concat({ name: newName, number: newNumber, id: persons[persons.length - 1].id + 1 })
+      setPersons(newPerson)
+      setNamesToShow(newPerson)
+
     }
 
 
