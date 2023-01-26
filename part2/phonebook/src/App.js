@@ -1,23 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  let [namesToShow, setNamesToShow] = useState(persons)
+  const [namesToShow, setNamesToShow] = useState(persons)
+  const [showAll, setShowAll] = useState(true)
+
+  useEffect(() => {
+    // console.log('effect');
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        // console.log(response.data)
+        setPersons(response.data)
+      })
+  }, [])
 
 
-
+  //  console.log(persons);
   const addPerson = (event) => {
     event.preventDefault()
+    setShowAll(true)
     // console.log(event)
     if (persons.filter(person => person.name === newName).length > 0) {
       alert(`${newName} is already added to phonebook`)
@@ -25,7 +33,7 @@ const App = () => {
     else {
       const newPerson = persons.concat({ name: newName, number: newNumber, id: persons[persons.length - 1].id + 1 })
       setPersons(newPerson)
-      setNamesToShow(newPerson)
+
 
     }
 
@@ -42,8 +50,12 @@ const App = () => {
     setNewNumber(event.target.value)
   }
   const handleFilterChange = (event) => {
-
-    setNamesToShow(persons.filter(person => person.name.toLowerCase().includes(event.target.value.toLowerCase())))
+    if (event.target.value.trim() === "") {
+      setShowAll(true)
+    } else {
+      setShowAll(false)
+      setNamesToShow(persons.filter(person => person.name.toLowerCase().includes(event.target.value.toLowerCase())))
+    }
 
   }
 
@@ -56,7 +68,7 @@ const App = () => {
       <PersonForm handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} handleOnSubmit={addPerson} />
 
       <h2>Numbers</h2>
-      {namesToShow.map(person => <Persons person={person} key={person.id} />)}
+      {showAll ? persons.map(person => <Persons person={person} key={person.id} />) : namesToShow.map(person => <Persons person={person} key={person.id} />)}
 
     </div>
   )
