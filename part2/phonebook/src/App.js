@@ -17,7 +17,7 @@ const App = () => {
       .getAll()
       .then(response => {
         // console.log(response.data)
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -36,7 +36,8 @@ const App = () => {
       personService
         .create(newPerson)
         .then(response => {
-          setPersons(persons.concat(response.data))
+          setPersons(persons.concat(response))
+        
         })
 
       //setPersons(newPerson)
